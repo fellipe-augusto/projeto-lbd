@@ -178,3 +178,19 @@ SELECT situacao, COUNT(idSolicitacao)
 FROM tbSolicitacao
 GROUP BY situacao;
 
+--4.11
+-- A cláusula having serve para especificar um critério de pesquisa/filtro para um resultado agrupado.
+--Objetivo:
+
+--4.12
+--Objetivo: Este comando serve para listar os produtos/descrição que estão com solicitação em andamento.
+SELECT idProduto, descricao
+FROM tbProduto
+WHERE idProduto IN (SELECT idProduto FROM tbSolicitacao WHERE situacao='Fechado');
+
+--4.13
+--Objetivo: Este comando serve para listar todos os clientes que não abriram solicitações.
+SELECT idCliente 
+FROM tbCliente 
+WHERE idCliente NOT IN (SELECT idCliente FROM tbSolicitacao);
+
