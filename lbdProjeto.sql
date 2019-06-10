@@ -164,7 +164,7 @@ WHERE codProduto NOT IN (SELECT codProduto FROM tbSolicitacao);
 
 
 
--- 4.9 Acrescente uma coluna nova “data de inclusao” no formato date, na primeira tabela criada. 
+-- 4.9 Acrescente uma coluna nova (data de inclusao) no formato date, na primeira tabela criada. 
 -- Altere o valor desta coluna colocando a data do sistema.
 
 ALTER TABLE tbTecnico 
@@ -172,8 +172,8 @@ ADD dataInclusao DATE DEFAULT SYSDATE;
 
 -- 4.10 Explique para que serve a clausula group by e de 1 exemplo de sua utilizacao.
 
--- A cláusula group by serve para agrupar o resultado de uma consulta de acordo com um campo ou campos.
--- Objetivo: Listar as solicitações que estão "Aberto" e as que estão "Fechado".
+-- A clausula group by serve para agrupar o resultado de uma consulta de acordo com um campo ou campos.
+-- Objetivo: Listar as solicitacoes que estao "Aberto" e as que estao "Fechado".
 SELECT situacao, COUNT(idSolicitacao)
 FROM tbSolicitacao
 GROUP BY situacao;
