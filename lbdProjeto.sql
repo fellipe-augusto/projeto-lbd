@@ -153,6 +153,10 @@ SELECT *
 FROM tbOcorrencia
 WHERE idSolicitacao NOT IN (SELECT idSolicitacao FROM tbSolicitacao);
 
+-- 4.6 Listar a descrição da categoria de problema que mais ocorreu nos últimos 2 meses.
+
+
+
 -- 4.7 Liste o codigo do produto que nunca teve uma solicitacao de manutencao.
 
 SELECT codProduto 
@@ -163,7 +167,6 @@ WHERE codProduto NOT IN (SELECT codProduto FROM tbSolicitacao);
 -- existam mais de 2 ocorrencias para a solicitacao.
 
 
-
 -- 4.9 Acrescente uma coluna nova (data de inclusao) no formato date, na primeira tabela criada. 
 -- Altere o valor desta coluna colocando a data do sistema.
 
@@ -171,26 +174,64 @@ ALTER TABLE tbTecnico
 ADD dataInclusao DATE DEFAULT SYSDATE;
 
 -- 4.10 Explique para que serve a clausula group by e de 1 exemplo de sua utilizacao.
-
 -- A clausula group by serve para agrupar o resultado de uma consulta de acordo com um campo ou campos.
 -- Objetivo: Listar as solicitacoes que estao "Aberto" e as que estao "Fechado".
 SELECT situacao, COUNT(idSolicitacao)
 FROM tbSolicitacao
 GROUP BY situacao;
 
---4.11
+-- 4.11 Explique para que serve a claúsula having e dê 1 exemplo de sua utilização.
 -- A cláusula having serve para especificar um critério de pesquisa/filtro para um resultado agrupado.
---Objetivo:
+-- Objetivo:
 
---4.12
---Objetivo: Este comando serve para listar os produtos/descrição que estão com solicitação em andamento.
+-- 4.12 Dê exemplo de um comando utilizando subconsultas que utilize o operador in. 
+-- Objetivo: Este comando serve para listar os produtos/descrição que estão com solicitação em andamento.
 SELECT idProduto, descricao
 FROM tbProduto
 WHERE idProduto IN (SELECT idProduto FROM tbSolicitacao WHERE situacao='Fechado');
 
---4.13
---Objetivo: Este comando serve para listar todos os clientes que não abriram solicitações.
+-- 4.13 Dê exemplo de um comando utilizando subconsultas que utilize o operador not in.
+-- Objetivo: Este comando serve para listar todos os clientes que não abriram solicitações.
 SELECT idCliente 
 FROM tbCliente 
 WHERE idCliente NOT IN (SELECT idCliente FROM tbSolicitacao);
+
+-- 4.14 Dê exemplo de um comando utilizando subconsultas que utilize o operador exists
+
+-- 4.15 Dê exemplo de um comando utilizando subconsultas que utilize o operador not exists.
+
+-- 4.16 Dê exemplo de uma subconsulta utilizada dentro de um comando Update.
+
+-- 4.17 Dê exemplo de uma subconsulta utilizada dentro de um comando Delete.
+
+-- 4.18 Dê exemplo de uma consulta utilizando a cláusula MINUS
+
+-- 4.19 Dê exemplo de uma consulta utilizando a cláusula INTERSECT.
+
+-- Parte PL/SQL --
+
+-- 5. Escreva uma função que seja útil para a lógica de negócios de seu sistema e indique o
+-- contexto de sua utilização.
+
+-- 6. Escreva um trigger que ao incluir uma ocorrência se já houver mais de 3 ocorrências da
+-- mesma solicitação gravar em uma tabela de log a mensagem.
+-- “Situação Grave – grande número de ocorrências <codsolicitação> <nomecliente&gt><qtde”.
+
+-- 7. Escreva um trigger que ao excluir uma solicitação exclua também as suas ocorrências.
+
+-- 8. Escreva uma procedure que calcule o custo de uma manutenção. Esta procedure deve
+-- receber como parâmetro o código da Solicitação e somar as horas de todas as ocorrências
+-- realizadas para esta solicitação. Considerar que a unidade é sempre horas
+-- inteiras(desconsiderar minutos). O custo base é:
+--          se tipoProd = ´HW´ custo = r$20,00 por hora
+--          tipoProd = ´SW´ custo = r$30,00 por hora
+-- O custo total não pode ser menor do que o preço mínimo para a categoria.
+
+-- 9. Escreva uma procedure que receba como parâmetro o código do produto e verifique,
+-- quantas requisições existem (em qq situação) e classifique:
+--          Se qtde de requisições >= 15 “Produto Ruim – não recomendar”
+--          Se qtde de requisições >= 5 e < 15 “Produto a ser verificado”
+--          Se qtde de requisições < 5 e > 0 “Produto Bom”
+--          Se qtde de requisições = 0 “Produto Excelente – recomendar”
+-- Gravar uma linha na tabela de Mensagem com: codproduto, nomeproduto e a classificação atribuída acima.
 
