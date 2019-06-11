@@ -225,10 +225,23 @@ WHERE EXISTS (SELECT idCliente
               WHERE A.idCliente = B.idCliente AND B.idCliente = 2);
 
 -- 4.17 Dê exemplo de uma subconsulta utilizada dentro de um comando Delete.
+-- Objetivo: Exclui tipos de produtos não associados a produtos.
+DELETE FROM tbTipoProduto A
+WHERE NOT EXISTS (SELECT *
+                  FROM tbProduto B
+                  WHERE B.idTipo = A.idTipo);
 
 -- 4.18 Dê exemplo de uma consulta utilizando a cláusula MINUS
+-- Objetivo: Listar as categorias cadastradas sem solicitações.
+SELECT idCategoria FROM tbSolicitacao
+MINUS
+SELECT idCategoria FROM tbCategoria;
 
 -- 4.19 Dê exemplo de uma consulta utilizando a cláusula INTERSECT.
+-- Objetivo: Listar os técnicos que possuem ocorrências.
+SELECT idTecnico FROM tbTecnico
+INTERSECT
+SELECT idTecnico FROM tbOcorrencia;
 
 -- Parte PL/SQL --
 
