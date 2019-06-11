@@ -217,6 +217,29 @@ WHERE idCliente NOT IN (SELECT idCliente FROM tbSolicitacao);
 -- mesma solicitação gravar em uma tabela de log a mensagem.
 -- “Situação Grave – grande número de ocorrências <codsolicitação> <nomecliente&gt><qtde”.
 
+create or replace function FN_CalcTotal (idSolicit tbSolicitacao.idSolicitacao%type)
+Return number
+as
+VTotal tbSolicitacao.custoTotal%type;
+VPreco tbCategoria.precoHora%type;
+VHorasGasta tbSolicitacao.horasGastas%type;
+
+Begin
+    Select S.horasGastas,C.precoHora into VHorasGasta,VPreco
+    from tbSolicitacao S,tbCategoria C
+    where  S.idSolicitacao = idSolicit and
+           S.idCategoria = c.idcategoria;
+    
+   VTotal := VHorasGasta * VPreco;
+
+    return (VTotal);    
+end FN_CalcTotal;
+
+Select S.idSolicitacao,S.horasGastas as "Horas gastas", c.precohora, FN_CalcTotal(idSolicitacao)as "Valor Total"
+From tbSolicitacao S, tbCategoria C
+where s.idcategoria = c.idcategoria;
+
+
 -- 7. Escreva um trigger que ao excluir uma solicitação exclua também as suas ocorrências.
 
 -- 8. Escreva uma procedure que calcule o custo de uma manutenção. Esta procedure deve
