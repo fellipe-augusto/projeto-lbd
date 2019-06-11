@@ -125,7 +125,7 @@ INSERT INTO tbOcorrencia VALUES (005, 004, 005, '25/05/2019', 'Reparo concluÃ­do
 -- 4.1 Listar o codigo do cliente, o nome do cliente e todas as solicitacoes efetuados por ele no mes de junho/2019.
 
 SELECT C.idCliente, C.nomeCli, S.idSolicitacao, S.idProduto, S.idCategoria, S.dataSoli, S.horasGastas, S.custoTotal, S.situacao 
-FROM tbCliente C, tbSolicitacao S 
+FROM tbCliente C, tbSolicitacao S
 WHERE C.idCliente = S.idCliente AND dataSoli BETWEEN to_date('01/06/2019','DD/MM/YYYY') AND to_date('30/06/2019','DD/MM/YYYY');
 
 -- 4.2 Listar o produto que possui o maior numero de solicitacoes cadastradas ja atendidas.
@@ -182,7 +182,11 @@ GROUP BY situacao;
 
 -- 4.11 Explique para que serve a claúsula having e dê 1 exemplo de sua utilização.
 -- A cláusula having serve para especificar um critério de pesquisa/filtro para um resultado agrupado.
--- Objetivo:
+-- Objetivo: Listar quais produtos possuem apenas 1 solicitação.
+SELECT idProduto, COUNT(*) AS "Nº de Solicitações"
+FROM tbSolicitacao
+GROUP BY idProduto
+HAVING COUNT(*) = 1;
 
 -- 4.12 Dê exemplo de um comando utilizando subconsultas que utilize o operador in. 
 -- Objetivo: Este comando serve para listar os produtos/descrição que estão com solicitação em andamento.
@@ -197,16 +201,47 @@ FROM tbCliente
 WHERE idCliente NOT IN (SELECT idCliente FROM tbSolicitacao);
 
 -- 4.14 Dê exemplo de um comando utilizando subconsultas que utilize o operador exists
+-- Objetivo: Listar os dados dos clientes com solicitações.
+SELECT *
+FROM tbCliente A
+WHERE EXISTS (SELECT * 
+              FROM tbSolicitacao B
+              WHERE A.idCliente = B.idCliente);
 
 -- 4.15 Dê exemplo de um comando utilizando subconsultas que utilize o operador not exists.
+-- Objetivo: Listar os dados dos técnicos que não possuem ocorrências.
+SELECT *
+FROM tbTecnico A
+WHERE NOT EXISTS (SELECT *
+                  FROM tbOcorrencia B
+                  WHERE A.idTecnico = B.idTecnico);
 
 -- 4.16 Dê exemplo de uma subconsulta utilizada dentro de um comando Update.
+-- Objetivo: Atualiza a situação da solicitação do Cliente de ID = 2 para fechado.
+UPDATE tbSolicitacao A
+SET A.situacao = 'Fechado', A.horasGastas = 3, A.custoTotal = 150 
+WHERE EXISTS (SELECT idCliente
+              FROM tbCliente B
+              WHERE A.idCliente = B.idCliente AND B.idCliente = 2);
 
 -- 4.17 Dê exemplo de uma subconsulta utilizada dentro de um comando Delete.
+-- Objetivo: Exclui tipos de produtos não associados a produtos.
+DELETE FROM tbTipoProduto A
+WHERE NOT EXISTS (SELECT *
+                  FROM tbProduto B
+                  WHERE B.idTipo = A.idTipo);
 
 -- 4.18 Dê exemplo de uma consulta utilizando a cláusula MINUS
+-- Objetivo: Listar as categorias cadastradas sem solicitações.
+SELECT idCategoria FROM tbSolicitacao
+MINUS
+SELECT idCategoria FROM tbCategoria;
 
 -- 4.19 Dê exemplo de uma consulta utilizando a cláusula INTERSECT.
+-- Objetivo: Listar os técnicos que possuem ocorrências.
+SELECT idTecnico FROM tbTecnico
+INTERSECT
+SELECT idTecnico FROM tbOcorrencia;
 
 -- Parte PL/SQL --
 
