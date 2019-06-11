@@ -248,10 +248,6 @@ SELECT idTecnico FROM tbOcorrencia;
 -- 5. Escreva uma função que seja útil para a lógica de negócios de seu sistema e indique o
 -- contexto de sua utilização.
 
--- 6. Escreva um trigger que ao incluir uma ocorrência se já houver mais de 3 ocorrências da
--- mesma solicitação gravar em uma tabela de log a mensagem.
--- “Situação Grave – grande número de ocorrências <codsolicitação> <nomecliente&gt><qtde”.
-
 create or replace function FN_CalcTotal (idSolicit tbSolicitacao.idSolicitacao%type)
 Return number
 as
@@ -274,6 +270,10 @@ Select S.idSolicitacao,S.horasGastas as "Horas gastas", c.precohora, FN_CalcTota
 From tbSolicitacao S, tbCategoria C
 where s.idcategoria = c.idcategoria;
 
+-- 6. Escreva um trigger que ao incluir uma ocorrência se já houver mais de 3 ocorrências da
+-- mesma solicitação gravar em uma tabela de log a mensagem.
+-- “Situação Grave – grande número de ocorrências <codsolicitação> <nomecliente&gt><qtde”.
+
 
 -- 7. Escreva um trigger que ao excluir uma solicitação exclua também as suas ocorrências.
 
@@ -292,4 +292,46 @@ where s.idcategoria = c.idcategoria;
 --          Se qtde de requisições < 5 e > 0 “Produto Bom”
 --          Se qtde de requisições = 0 “Produto Excelente – recomendar”
 -- Gravar uma linha na tabela de Mensagem com: codproduto, nomeproduto e a classificação atribuída acima.
+create table tbMensagem
+( codProduto number(5) not null,
+  nomeProduto varchar2(30) not null,
+  classific varchar2(30) not null
+);
 
+Create or replace procedure ClassificacaoProduto(p_idProduto number)
+as
+  v_quant number(10);
+  v_classific varchar2 (30);
+  v_nomeProduto varchar2 (50);
+
+begin
+    select count(*) into v_quant 
+    from tbSolicitacao 
+    where idProduto = p_idProduto;
+    
+    select descricao into v_nomeProduto
+    from tbProduto
+    where idProduto = p_idProduto;
+    
+    if v_quant = 0 then
+    v_classific := 'Produto Excelente - Recomendar';
+    end if;
+
+    if v_quant > 0 AND v_quant < 5 then
+    v_classific := 'Produto Bom';
+    end if;
+
+    if v_quant >= 5 AND v_quant < 15 then
+    v_classific := 'Produto a ser Verificado';
+    end if;
+
+    if v_quant >= 15 then
+    v_classific := 'Produto Excelente - Recomendar';
+    end if;
+
+    insert into tbMensagem values(p_idProduto,v_nomeProduto,v_classific);
+commit;
+end;
+
+exec ClassificacaoProduto(006);
+select * from tbMensagem;
