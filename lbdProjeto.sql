@@ -334,4 +334,3 @@ commit;
 end;
 
 exec ClassificacaoProduto(006);
-select * from tbMensagem;
