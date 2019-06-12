@@ -285,6 +285,31 @@ where s.idcategoria = c.idcategoria;
 --          tipoProd = ´SW´ custo = r$30,00 por hora
 -- O custo total não pode ser menor do que o preço mínimo para a categoria.
 
+Create or replace procedure CustoManutencao(p_idSolicitacao number)
+as
+    v_somaHoras tbSolicitacao.horasGastas%type;
+    v_custoHora tbSolicitacao.custoTotal%type;
+    v_custoTotal tbSolicitacao.custoTotal%type;
+
+begin
+
+    select sum(horasGastas) into v_somaHoras
+    from tbocorrencia
+    where idsolicitacao = p_idsolicitacao;
+    
+    select precoHora into v_custoHora -- O valor do precoHora ja ta definido por categoria na tabela categoria
+    from tbCategoria
+    where idCategoria = (select idCategoria from tbSolicitacao where idSolicitacao = p_idsolicitacao);
+
+    v_custoTotal := v_somaHoras * v_custoHora;
+    
+    update tbSolicitacao SET horasGastas = v_somaHoras, custoTotal = v_custoTotal where idSolicitacao = p_idSolicitacao;
+    
+commit;
+end;
+
+exec CustoManutencao(004);
+
 -- 9. Escreva uma procedure que receba como parâmetro o código do produto e verifique,
 -- quantas requisições existem (em qq situação) e classifique:
 --          Se qtde de requisições >= 15 “Produto Ruim – não recomendar”
