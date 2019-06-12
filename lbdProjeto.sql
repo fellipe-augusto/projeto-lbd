@@ -274,8 +274,40 @@ where s.idcategoria = c.idcategoria;
 -- mesma solicitação gravar em uma tabela de log a mensagem.
 -- “Situação Grave – grande número de ocorrências <codsolicitação> <nomecliente&gt><qtde”.
 
+Create or Replace trigger IncluirOcorrencia
+before insert on tbOcorrencia
+for each row
+declare
+v_msg varchar2 (50);
+v_nomeCliente varchar2 (50);
+v_quant number(8);
+
+begin
+
+    select count(*) into v_quant from tbOcorrencia where idSolicitacao = :new.idSolicitacao;
+    v_quant := v_quant + 1; -- Atribuindo +1 pois estamos usando o BEFORE
+    
+    if INSERTING AND v_quant > 3 then 
+        select nomeCli into v_nomeCliente from tbCliente where idCliente = (select idCliente from tbSolicitacao where idSolicitacao = :new.idSolicitacao);       
+        insert into tbMensagem values ('Situação Grave - grande número de ocorrências', :new.idSolicitacao, v_nomeCliente, v_quant);
+    
+    end if;
+end IncluirOcorrencia;
 
 -- 7. Escreva um trigger que ao excluir uma solicitação exclua também as suas ocorrências.
+
+Create or Replace trigger Tr_DeletarOcorrencia
+before delete on tbSolicitacao
+for each row
+
+begin
+    if DELETING then
+        delete from tbOcorrencia
+        where idSolicitacao = :old.idSolicitacao;
+
+    end if;
+
+end Tr_DeletarOcorrencia;
 
 -- 8. Escreva uma procedure que calcule o custo de uma manutenção. Esta procedure deve
 -- receber como parâmetro o código da Solicitação e somar as horas de todas as ocorrências
