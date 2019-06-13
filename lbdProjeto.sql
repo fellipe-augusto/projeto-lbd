@@ -270,6 +270,10 @@ Select S.idSolicitacao,S.horasGastas as "Horas gastas", c.precohora, FN_CalcTota
 From tbSolicitacao S, tbCategoria C
 where s.idcategoria = c.idcategoria;
 
+A função acima realiza a operação do calculo do valor total da solicitação feita pelo cliente, ou seja,
+é pego o total de horas da solicitação, que se refere ao tempo de manutenção, multiplicado pela
+valor hora da assitencia técnica
+
 -- 6. Escreva um trigger que ao incluir uma ocorrência se já houver mais de 3 ocorrências da
 -- mesma solicitação gravar em uma tabela de log a mensagem.
 -- “Situação Grave – grande número de ocorrências <codsolicitação> <nomecliente&gt><qtde>”.
@@ -293,10 +297,6 @@ begin
     
     end if;
 end IncluirOcorrencia;
-
-A função acima realiza a operação do calculo do valor total da solicitação feita pelo cliente, ou seja,
-é pego o total de horas da solicitação, que se refere ao tempo de manutenção, multiplicado pela
-valor hora da assitencia técnica
 
 -- 7. Escreva um trigger que ao excluir uma solicitação exclua também as suas ocorrências.
 
