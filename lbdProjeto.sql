@@ -419,7 +419,7 @@ begin
     end if;
 
     if v_quant >= 15 then
-    v_classific := 'Produto Excelente - Recomendar';
+    v_classific := 'Produto Ruim – não recomendar';
     end if;
 
     insert into tbMensagemClassificacao values(p_idProduto,v_nomeProduto,v_classific);
