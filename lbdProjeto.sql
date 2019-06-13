@@ -131,11 +131,15 @@ INSERT INTO tbSolicitacao VALUES (004, 001, 003, 005, '15/05/2019', 3, 150.00, '
 INSERT INTO tbSolicitacao VALUES (005, 002, 004, 004, '21/05/2019', 2, 40.00, 'Fechado');
 INSERT INTO tbSolicitacao VALUES (006, 002, 004, 004, '29/05/2019', 2, 40.00, 'Fechado');
 
+INSERT INTO tbSolicitacao VALUES (007, 002, 004, 004, '29/05/2019', 2, 40.00, 'Aberto');
+
 
 INSERT INTO tbOcorrencia VALUES (004, 001, 002, '16/05/2019', 'Solicita√ß√£o de pe√ßas', 1);
 INSERT INTO tbOcorrencia VALUES (004, 002, 001, '17/05/2019', 'Pe√ßa errada, outra solicita√ß√£o', 1);
 INSERT INTO tbOcorrencia VALUES (004, 003, 005, '18/05/2019', 'Troca da pe√ßa', 1);
 INSERT INTO tbOcorrencia VALUES (005, 004, 005, '25/05/2019', 'Reparo conclu√≠do na visita', 2);
+INSERT INTO tbOcorrencia VALUES (007, 006, 005, '29/05/2019', 'Reparo conclu√≠do na visita', 2);
+
 
 /* Exercicio 4 */
 
@@ -163,6 +167,18 @@ GROUP BY TP.descricao;
 -- 4.4 Criar uma visao com o custo total das manutencoes realizadas para cada cliente.
 -- Considere apenas as solicitacoes atendidas. Esta visao √© atualizavel? Porque?
 
+create or replace view vw_CustoTotal
+as
+Select S.idSolicitacao, (S.horasGastas * C.precoHora) as ValorTotal
+    from tbSolicitacao S,tbCategoria C, tbOcorrencia O
+    where S.idSolicitacao = O.idSolicitacao and
+           S.idCategoria = C.idcategoria;
+
+select * from vw_CustoTotal
+           
+
+N„o. Pois a vis„o realiza as operaÁıes de junÁ„o. Um view n„o È atualiz·vel
+quando tem junÁ„o, operadores como group by, having, sum, max, min e ter campos de calculo
 
 -- 4.5 Listar todas as ocorrencias das solicitacoes nao atendidas.
 
@@ -182,6 +198,10 @@ WHERE codProduto NOT IN (SELECT codProduto FROM tbSolicitacao);
 
 -- 4.8 Listar o nome dos tecnicos que tenham solicitacoes parcialmente atendidas e que ja 
 -- existam mais de 2 ocorrencias para a solicitacao.
+
+select nomeTec from tbTecnico 
+where idtecnico in (select o.idTecnico, count(*)from tbOcorrencia o, tbSolicitacao s 
+                    where o.idSolicitacao = s.IdSolicitacao AND s.situacao = 'Aberto');
 
 
 -- 4.9 Acrescente uma coluna nova (data de inclusao) no formato date, na primeira tabela criada. 
