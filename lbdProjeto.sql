@@ -73,6 +73,23 @@ ADD CONSTRAINT FK_TECNICO_IDTECNICO
 FOREIGN KEY (idTecnico) REFERENCES tbTecnico;
 
 
+
+--Tabelas das mensagens
+
+create table tbMensagemClassificacao
+( codProduto number(5) not null,
+  nomeProduto varchar2(30) not null,
+  classific varchar2(30) not null
+);
+
+create table tbMensagemOcorrencia
+( 
+  situacao varcahr2 (50) not null,
+  idSolicitacao number(5) not null,
+  nomeCliente varchar2(50) not null,
+  quantidade number(5) not null
+);
+
 /*InserÃ§Ã£o de Dados*/
 
 INSERT INTO tbCliente VALUES (001, 'Celso Portiolli', '95684-4857', 'Rua Biridin');
@@ -293,7 +310,7 @@ begin
     
     if INSERTING AND v_quant > 3 then 
         select nomeCli into v_nomeCliente from tbCliente where idCliente = (select idCliente from tbSolicitacao where idSolicitacao = :new.idSolicitacao);       
-        insert into tbMensagem values ('Situação Grave - grande número de ocorrências', :new.idSolicitacao, v_nomeCliente, v_quant);
+        insert into tbMensagemOcorrencia values ('Situação Grave - grande número de ocorrências', :new.idSolicitacao, v_nomeCliente, v_quant);
     
     end if;
 end IncluirOcorrencia;
@@ -353,11 +370,6 @@ exec CustoManutencao(004);
 --          Se qtde de requisições < 5 e > 0 “Produto Bom”
 --          Se qtde de requisições = 0 “Produto Excelente – recomendar”
 -- Gravar uma linha na tabela de Mensagem com: codproduto, nomeproduto e a classificação atribuída acima.
-create table tbMensagem
-( codProduto number(5) not null,
-  nomeProduto varchar2(30) not null,
-  classific varchar2(30) not null
-);
 
 Create or replace procedure ClassificacaoProduto(p_idProduto number)
 as
@@ -390,7 +402,7 @@ begin
     v_classific := 'Produto Excelente - Recomendar';
     end if;
 
-    insert into tbMensagem values(p_idProduto,v_nomeProduto,v_classific);
+    insert into tbMensagemClassificacao values(p_idProduto,v_nomeProduto,v_classific);
 commit;
 end;
 
